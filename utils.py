@@ -7,6 +7,18 @@ import numpy as np
 import psutil
 
 
+def stitch_images(image_list):
+    """ Stitch a list of images together.
+    Args:
+        image_list (list)
+    Returns:
+        np.ndarray: stitched image
+    """
+    stitcher = cv2.createStitcher()
+    _, stitched = stitcher.stitch(image_list)
+    return stitched
+
+
 def read_image_rgb(img_file):
     """ Read in an image to an np.ndarray into RGB format."""
     return cv2.cvtColor(cv2.imread(img_file), cv2.COLOR_BGR2RGB)
