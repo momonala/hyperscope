@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <style type="text/css">
+      #hyperscope {
+        width: 500px;
+        height: 500px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="hyperscope"></div>
+    <script src="../static/openseadragon/openseadragon.min.js"></script>
+    <script>
+      var viewer = OpenSeadragon({
+        id:            'hyperscope',
+        prefixUrl:     '../static/openseadragon/images/',
+        tileSources:   'dzi/DSC_0001.dzi'
+      });
+    </script>
+  </body>
+</html>
