@@ -1,11 +1,13 @@
-# Temp Directories
+# large/temp directories
 tmp/
-microscope_images/
+micropscope_images/
+templates/dzi/
 
 # Project Files
 .idea
 __pycache__/
 .pytest_cache/
+magick-slicer.sh
 
 
 # OS generated files
