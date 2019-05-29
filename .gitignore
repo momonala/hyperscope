@@ -1,7 +1,8 @@
-# large/temp directories
-tmp/
+# Large & Temp Directories
+prototyping/
 micropscope_images/
-templates/dzi/
+micropscope_images_processed/
+hyperscope_vis/templates/dzi/
 
 # Project Files
 .idea

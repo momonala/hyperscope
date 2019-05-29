@@ -1,15 +1,15 @@
-Hyperscope
+# Hyperscope
 
 A Low-Cost Motorized Microscope to generate imagery for hyper-resolution microscopy and image-stacking for increased depth of field. 
 
 Automated micropscopes offer a wide range of advantages over manual operation. They are particularly useful for easier viewing and operational use, live-cell image aquisition, time lapse experiments, object-tracking, and more. However, Automated microscopes are prohibiively expensive for the average hobbyist, ranging from $10k-$20k. Solutions to adapt a manual micropscope with an automated stage exists, but is still in the price range of $6000 minimum. 
 
-Hyperscope is an attempt to change that, by using 3d printing, easy to find off-the-shelf components, and open source software, reducing the cost to less than $100. 
+Hyperscope is an attempt to change that, by using 3d printing, easy to find, off-the-shelf components, and open source software  - reducing the cost to less than $100. 
 
 Specifically, Hyperscope firmware and software allows for 3 features: 
  
 - (TO DO) manual operation of the X and Y movers on the stage, plus both focus rings
-- autmated scanning and photography of a slide
+- (TO DO) autmated scanning and photography of a slide
     - image stitching for hyper-resolution panaramics of the entire slide
     - (TO DO) focus stacking for increased depth of field imagry of samples
 
@@ -34,7 +34,7 @@ We can scan across an slide and take images along the way, and then stitch these
 
 TO DO: give specifics about how to run the files, edit parameters etc. 
 
-The final panormic, hyper-resolution image, will likely be tens of thousands of pixels in the X and Y dimensions, so it is not practical to view it in a normal image renderer. Instead, we can make use of OpenSeaDragon, which uses a similar protocol as Google Maps to view and interact with large scale images, by tile-ing the image and rendering it in pieces as needed. 
+The final panormic, hyper-resolution image, will likely be up to a giga-pixel in size, so it is not practical to view it in a normal image renderer. Instead, we can make use of OpenSeaDragon, which uses a similar protocol as Google Maps to view and interact with large scale images, by tile-ing the image and rendering it in pieces as needed. 
 
 To make the hyper-resolution image compatible with OpenSeaDragon, we need to covert it into a `.dzi` file, and OSD recommends some ways here. I like the Shell script (MagickSlicer)[https://github.com/VoidVolker/MagickSlicer]. 
 
