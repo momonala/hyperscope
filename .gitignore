@@ -1,7 +1,7 @@
 # Large & Temp Directories
 prototyping/
-micropscope_images/
-micropscope_images_processed/
+microscope_images/
+microscope_images_processed/
 hyperscope_vis/templates/dzi/
 
 # Project Files
