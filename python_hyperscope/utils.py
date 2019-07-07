@@ -9,6 +9,7 @@ import psutil
 
 logger = logging.getLogger(__name__)
 
+
 def stitch_images(image_list):
     """ Stitch a list of images together.
     Args:

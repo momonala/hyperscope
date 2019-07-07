@@ -21,8 +21,6 @@ Specifically, Hyperscope firmware and software allows for 3 features:
     - `pip install -r requirments.txt`
 - [OpenCV](https://opencv.org/) for image processing
     - `conda install -c conda-forge opencv ` (recommended to use Conda)
-- [OpenSeaDragon](https://openseadragon.github.io/#downloadh) for rendering hyper-resolution images
-    - necessary files already in repo
 
 --- 
 # How it Works:
@@ -35,7 +33,7 @@ TO DO: give specifics about how to run the files, edit parameters etc.
 
 The final panormic, hyper-resolution image, will likely be up to a giga-pixel in size, so it is not practical to view it in a normal image renderer. Instead, we can make use of OpenSeaDragon, which uses a similar protocol as Google Maps to view and interact with large scale images, by tile-ing the image and rendering it in pieces as needed. 
 
-To make the hyper-resolution image compatible with OpenSeaDragon, we need to covert it into a `.dzi` file, and OSD recommends some ways here. I like the Shell script [MagickSlicer](https://github.com/VoidVolker/MagickSlicer). 
+To make the hyper-resolution image compatible with [OpenSeaDragon](https://openseadragon.github.io/#downloadh), we need to covert it into a `.dzi` file, and OSD recommends some ways here. I like the Shell script [MagickSlicer](https://github.com/VoidVolker/MagickSlicer). 
 
 Once you create the `.dzi` files, place them in `templates/dzi`, TO DO run the Flask app `app.py`, and navigate to your image of interest on your local host :-) 
 
