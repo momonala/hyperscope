@@ -1,3 +1,5 @@
+"""The OpenCV Panoramic Stitching Algorithms."""
+
 import logging
 from glob import glob
 import os
@@ -11,12 +13,10 @@ from python_hyperscope.utils import (crop_border,
 
 logger = logging.getLogger(__name__)
 
-BORDER_X = 1
-BORDER_Y = 1
-
 
 def stitch_images_in_dir(in_dir, save_name):
-    """ Stitch Images in batches, growing at each function call.
+    """Stitch Images in batches, growing at each function call.
+
     Args:
         in_dir (str): input directory of images to batch and stitch
         save_name (str): output file name for temporary panoramics
@@ -27,7 +27,7 @@ def stitch_images_in_dir(in_dir, save_name):
     save_dir = '/'.join(save_name.split(os.sep)[:-1])
     create_save_dir_if_needed(save_dir)
 
-    image_files = sorted(glob(in_dir + '/*'))
+    image_files = sorted(glob(in_dir + '/*JPG'))
     images = [cv2.imread(image_file) for image_file in image_files]
 
     try:
@@ -35,15 +35,22 @@ def stitch_images_in_dir(in_dir, save_name):
 
         # save and log if it worked
         if stitched is not None:
-            cv2.imwrite(f'{save_name}.JPEG', stitched)
+            cv2.imwrite(f'{save_name}.JPG', stitched)
         else:
             logger.error(f'Stitching Error: batch: {in_dir}')
-    except Exception as f:
-        logger.error(f)
+    except Exception as e:
+        logger.error(e)
+
+# ----- No longer supporting these ---------------------------------------------------------------
+
+
+BORDER_X = 1
+BORDER_Y = 1
 
 
 def stitch_image_in_batches(in_dir, save_dir, batch_size, skip=1, crop=False):
-    """ Stitch Images in batches, growing at each function call.
+    """Stitch Images in batches, growing at each function call.
+
     Args:
         in_dir (str): input directory of images to batch and stitch
         save_dir (str): output directory of temporary panoramics
@@ -88,7 +95,8 @@ def stitch_image_in_batches(in_dir, save_dir, batch_size, skip=1, crop=False):
 
 
 def stitch_seqentially(in_dir, skip=1):
-    """ Stitch images sequentially, meaning merge one image at a time to the panoromaic.
+    """Stitch images sequentially, meaning merge one image at a time to the panoromaic.
+
     Args:
         in_dir (str): input directory to glob files from and merge.
         skip (int): number of images to skip if they are too close to each other
