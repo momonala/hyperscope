@@ -2,25 +2,25 @@
 
 ## Software 
 ### Image Stitching
-- confirm rotation of images is same -> improves horizontal error
-    - align stitched image and crop out black on horizontal
 - cascade stitches in horizontal batches until final image is reached
     - write an automated algo for this
 - test on maximum zoom level
 
 ### Firmware
-Get Serial input working reliably
+- Get serial input working reliably
+- OR predetermine X,Y range of slide, and automaticaly scan across 
+    - no serial input needed
 
 ## Hardware
 ### Stage Automation
 - determine when bounds hit on stage
 - print motor-stage interface - timing belts
 
+### Focus Automation
+- print motor mounts for focus rings
+ 
 ---
 # Later 
-### Web Viewer
-- Jinja templating for Flask + frontend + OpenSeaDragon
-- root site + individual pages for unique images
 
 ### AutoFocus
 - determine if image is in focus or not, go to right spot if not
@@ -28,7 +28,3 @@ Get Serial input working reliably
 ### Object Tracking for live cells
 - follow a specific sample around (OpenCV Tracking lib)
 - selected ROIs (requires GUI)
-
-### Remote Trigger Camera
-- hotwire existing trigger OR do within software with tethering cable...
-    - once complete, trigger image stitching software

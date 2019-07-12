@@ -29,7 +29,9 @@ Specifically, Hyperscope firmware and software allows for 3 features:
 ### Hyper-Resolution Parnoramics
 We can scan across an slide along the x and y axis and take images along the way, and then stitch these images together with [OpenCV's stitching class](https://docs.opencv.org/2.4/modules/stitching/doc/introduction.html). See the link for a detailed description of this pipeline. Stitching can be performed using the `generate_panos.py` file. 
 
-My experiments show that with OpenCV, at least 20% overlap of images is need to get reliable stitching. Additionally, I found that OpenCV's algorithm is optimized for smaller collections of images, and not for recurisve stitching. Recursive or sequential stitching of images results in progressive blurring, caused by overlaying images with slight frame shifts. Instead, its best to stitch images in batches. Ideally, we stitch one entire horizontal row of images at a time, then stitch these large horizontal stacks.
+My experiments show that with OpenCV, at least 20% overlap of images is need to get reliable stitching. Since the stitching uses Scale-Invariant-Feature-Transforms (SIFT), the rotation and scale of our images does not matter. 
+
+However, I found that OpenCV's algorithm is optimized for smaller collections of images, and not for recurisve stitching. Recursive or sequential stitching of images results in progressive blurring, caused by overlaying images with slight frame shifts. Instead, its best to stitch images in batches. Ideally, we stitch one entire horizontal row of images at a time, then stitch these large horizontal stacks.
 
 The final panoramic, hyper-resolution image, will likely be up to a giga-pixel in size, so it is not practical to view it in a normal image renderer. Instead, we can make use of OpenSeaDragon, which uses a similar protocol as Google Maps to view and interact with large scale images, by tile-ing the image and rendering it in pieces as needed. 
 
