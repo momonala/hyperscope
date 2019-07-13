@@ -1,18 +1,17 @@
 # Hyperscope
 
-[Explore images here](https://momonala.github.io/hyperscope.github.io/)
-
 A low-cost motorized microscope for generating hyper-resolution microscope images. 
+
+[Explore sample images here](https://momonala.github.io/hyperscope.github.io/)
 
 Automated micropscopes offer a wide range of advantages over manual operation. They are particularly useful for easier viewing and operational use, live-cell image aquisition, time lapse experiments, object-tracking, and more. However, automated microscopes are prohibitively expensive for the average hobbyist, ranging from $10k-$20k. Solutions to adapt a manual micropscope with an automated stage exists, but is still in the price range of $6000 minimum. 
 
 Hyperscope is an attempt to change that, by using 3d printing, easy to find, off-the-shelf components, and open source software  - reducing the cost to less than $100. 
 
-Specifically, Hyperscope firmware and software allows for 3 key-features: 
+Specifically, Hyperscope firmware and software allows for 2 key-features: 
  
-- (TO DO) autmated scanning and photography of a slide
-- image stitching for hyper-resolution panaramics of the entire slide
-- full manual control
+- automatic generation of hyper-resolution panaramics of an entire slide
+- (TO DO) automatic scanning and photography of a slide
 
 ---     
 # Installation 
@@ -23,31 +22,46 @@ Specifically, Hyperscope firmware and software allows for 3 key-features:
     - `conda install -c conda-forge opencv `
 
 --- 
-# Usage
+# How it Works:
+
+## Automatically Generating Hyper-Resolution Panoramics
+
+To generate the hyper-resolution panoramics, we need to scan across a slide in the x and y directions and take a grid of images. These images are organized by row and stitched together in these row-batches. The long row-images are stitched into a large final panoramic, and this final image is sliced according to the [DZI protocol](https://openseadragon.github.io/examples/tilesource-dzi/) for rendering with the [OpenSeaDragon (OSD)](https://openseadragon.github.io/#downloadh) renderer. This pipeline is fully automated into the [`python_hyperscope/generate_panos.py`](python_hyperscope/generate_panos.py) script. 
+
+#### Usage
 ```bash
 python -m python_hyperscope.generate_panos \
-    -i microscope_images/<sample directory>/
+    --input microscope_images/<sample directory>
 ```
 
 Saves output image and `.dzi` file directory to `microscope_images/<sample directory>/output`
 
---- 
-# How it Works:
+Images are stitched together, utilizing [OpenCV's stitching class](https://docs.opencv.org/2.4/modules/stitching/doc/introduction.html). See the link for a detailed description of this pipeline.
 
-### Hyper-Resolution Parnoramics
-We can scan across an slide along the x and y axis and take images along the way, and then stitch these images together with [OpenCV's stitching class](https://docs.opencv.org/2.4/modules/stitching/doc/introduction.html). See the link for a detailed description of this pipeline. Stitching can be performed using the `generate_panos.py` file. Its possible to also stitch using the [AutoStich](http://matthewalunbrown.com/autostitch/autostitch.html) library by Matthew Brown. I've seen slightly better and faster results with this, but there is no API, so it is not possible to automate the process.
+Its also possible to also stitch using the [AutoStich](http://matthewalunbrown.com/autostitch/autostitch.html) library by Matthew Brown. I've noticed that library can handle more edge cases, but there is no API, so it is not possible to programtically automate the stitching.
 
-My experiments show that with OpenCV, at least 20% overlap of images is need to get reliable stitching. Since the stitching uses Scale-Invariant-Feature-Transforms (SIFT), the rotation and scale of our images does not matter. 
+My experiments show that with OpenCV, at least 20% overlap of images is need to get reliable stitching. Since the stitching uses [Scale-Invariant-Feature-Transforms (SIFT)](https://en.wikipedia.org/wiki/Scale-invariant_feature_transform), the rotation and scale of our images does not matter. 
 
-However, I found that OpenCV's algorithm is optimized for smaller collections of images, and not for recurisve stitching. Recursive or sequential stitching of images results in progressive blurring, caused by overlaying images with slight frame shifts. Instead, its best to stitch images in batches. Ideally, we stitch one entire horizontal row of images at a time, then stitch these large horizontal stacks.
+However, I found that OpenCV's algorithm is optimized for smaller collections of images, and not for recurisve stitching. Recursive or sequential stitching of images results in progressive blurring, caused by overlaying images with slight frame shifts. Instead, its best to stitch images in batches. Ideally, we stitch one entire horizontal row of images at a time, then stitch these large horizontal stacks, which is built into my pipeline.
 
-The final panoramic, hyper-resolution image, will likely be up to a giga-pixel in size, so it is not practical to view it in a normal image renderer. Instead, we can make use of OpenSeaDragon, which uses a similar protocol as Google Maps to view and interact with large scale images, by tile-ing the image and rendering it in pieces as needed. 
+The final panoramic, hyper-resolution image, will likely be up to a giga-pixel in size, so it is not practical to view it in a normal image renderer. Instead, we can make use of OSD, which uses a similar protocol as Google Maps to view and interact with large scale images, by tile-ing the image and rendering it in pieces as needed. 
 
-To make the hyper-resolution image compatible with [OpenSeaDragon (OSD)](https://openseadragon.github.io/#downloadh), you need to covert it into a `.dzi` file. I like the Shell script [MagickSlicer](https://github.com/VoidVolker/MagickSlicer). I've incorporated this into the `generate_panos.py` image stitching pipeline.
+To make the hyper-resolution image compatible with OSD, you need to covert it into a DZI format. I use the Shell script [MagickSlicer by VoidVolker](https://github.com/VoidVolker/MagickSlicer).
 
-### Mover Firmware
+## Mover Automation
 
-Its possible to move the slide programatically as well as manual (with a joystick). The hardware calls for an Arudino Mega microcontroller, two NEMA 17 stepper motors, two A4988 drivers, and a camera trigger. Note that my camera trigger is just a Nikon remote shutter release, hot-wired to be triggered from a `PIN_UP` signal from the Arduino ;) Below is a schematic of the hardware.
+The hardware enables both programatic and manual (with a joystick) control of the slide movers. 
+
+Materials list:
+     
+ - Arudino Mega micro-controller
+ - two NEMA 17 stepper motors
+ - two A4988 stepper drivers
+ - two timing belts
+ - joystick - 2 axis analog output, z-axis digital output
+ - remote camera trigger
+ 
+All interfaces between these parts and the microscope were 3d printed, and the parts can be found in the [hardware](/hardware) directory. Note that my camera trigger is just a Nikon remote shutter release, hot-wired to be triggered from a `PIN_UP` signal from the Arduino ;) Below is a schematic of the hardware.
 
 ![hyperscope-hardware-shematic](assets/hyperscope-hardware-shematic.png "hyperscope-hardware-shematic")
 

@@ -2,9 +2,7 @@
 
 ## Software 
 ### Image Stitching
-- cascade stitches in horizontal batches until final image is reached
-    - write an automated algo for this
-- test on maximum zoom level
+- test on 40x zoom level
 
 ### Firmware
 - Get serial input working reliably
