@@ -23,7 +23,7 @@ def stitch_images_in_dir(in_dir, save_name):
 
     Returns: Nothing. Creates Pano in microscope_images_processed/tmp_panoX/ directories as a side effect.
     """
-    logger.info(f'Attemping to stitch images in dir: {in_dir}')
+    logger.debug(f'Attemping to stitch images in dir: {in_dir}')
     save_dir = '/'.join(save_name.split(os.sep)[:-1])
     create_save_dir_if_needed(save_dir)
 

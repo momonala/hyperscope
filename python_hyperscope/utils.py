@@ -5,7 +5,6 @@ from glob import glob
 from shutil import copyfile
 
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import psutil
 from tqdm import tqdm
@@ -35,8 +34,8 @@ def prepare_directories_for_stitching_in_rows(input_dir):
         # if we see a black 'end of row' image, copy all previous images to a new numbered directory.
         if image_pixel_sum < 5:
             debug_logs.append((img, round(image_pixel_sum, 2)))
-            new_dir = f'{input_dir}/{str(directory_number).zfill(2)}'
-            os.mkdir(new_dir)
+            new_dir = f'{input_dir}/row_{str(directory_number).zfill(2)}'
+            create_save_dir_if_needed(new_dir)
             for img_in_row in images_in_one_row:
                 copyfile(img_in_row, f'{new_dir}/{img_in_row.split("/")[-1]}')
             images_in_one_row = []
@@ -57,6 +56,23 @@ def stitch_images(image_list):
     stitcher = cv2.createStitcher()
     _, stitched = stitcher.stitch(image_list)
     return stitched
+
+
+def create_save_dir_if_needed(save_dir):
+    """Create directory if needed."""
+    if not os.path.isdir(save_dir):
+        logger.debug(f'Creating dir: {save_dir}')
+        os.mkdir(save_dir)
+
+
+def get_memory_usage():
+    """Returns memory usage of current process in MB. Used for logging.
+
+    Returns:
+        float: Memory usage of current process in MB.
+    """
+    pid = os.getpid()
+    return round(psutil.Process(pid).memory_info().rss / 1e6, 2)
 
 
 def read_image_rgb(img_file):
@@ -90,12 +106,6 @@ def crop_border(img, border_x, border_y):
     return img[border_y:-border_y, border_x:-border_x, :]
 
 
-def plot(img):
-    """Plot an image."""
-    plt.imshow(img)
-    plt.show()
-
-
 def get_mag(img):
     """Get magnitude (energy) of image."""
     sobelx = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=5)
@@ -106,19 +116,3 @@ def get_mag(img):
 
 def rm_files_in_dir(directory):
     [os.remove(f) for f in glob(f'{directory}*')]
-
-
-def create_save_dir_if_needed(save_dir):
-    if not os.path.isdir(save_dir):
-        logger.info(f'Creating dir: {save_dir}')
-        os.mkdir(save_dir)
-
-
-def get_memory_usage():
-    """Returns memory usage of current process in MB. Used for logging.
-
-    Returns:
-        float: Memory usage of current process in MB.
-    """
-    pid = os.getpid()
-    return round(psutil.Process(pid).memory_info().rss / 1e6, 2)
