@@ -15,11 +15,8 @@ Specifically, Hyperscope firmware and software allows for 2 key-features:
 
 ---     
 # Installation 
-## Dependencies 
 -  Python >=3.4
     - `pip install -r requirments.txt`
-- [OpenCV](https://opencv.org/) for image processing
-    - `conda install -c conda-forge opencv `
 
 --- 
 # How it Works:
@@ -31,7 +28,8 @@ To generate the hyper-resolution panoramics, we need to scan across a slide in t
 #### Usage
 ```bash
 python -m python_hyperscope.generate_panos \
-    --input microscope_images/<sample directory>
+        --input_dir microscope_images/<sample directory>/ \
+        --prepare <bool to prepare directories or not>
 ```
 
 Saves output image and `.dzi` file directory to `microscope_images/<sample directory>/output`

@@ -3,6 +3,8 @@ prototyping/
 microscope_images/
 microscope_images_processed/
 hyperscope_vis/templates/dzi/
+python_hyperscope/unsupported.py
+tmp/
 
 # Project Files
 .idea
