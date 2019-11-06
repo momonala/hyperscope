@@ -75,24 +75,6 @@ def get_memory_usage():
     return round(psutil.Process(pid).memory_info().rss / 1e6, 2)
 
 
-def read_image_rgb(img_file):
-    """Read in an image to an np.ndarray into RGB format."""
-    return cv2.cvtColor(cv2.imread(img_file), cv2.COLOR_BGR2RGB)
-
-
-def rotate(img_file):
-    """Rotate an image if needed, clockwise by 90 deg, and overwrite file."""
-    img = cv2.imread(img_file)
-    if img.shape != (2848, 4288, 3):
-        rotated = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
-        cv2.imwrite(img_file, rotated)
-
-
-def bgr2rgb(bgr):
-    """Convert np.ndarray BGR image to RGB."""
-    return cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-
-
 def crop_border(img, border_x, border_y):
     """Crop the border of an image. Due to peripheral blurring.
 
