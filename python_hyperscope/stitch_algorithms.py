@@ -1,34 +1,36 @@
 """The OpenCV Panoramic Stitching Algorithms."""
 
 import logging
-from glob import glob
 import os
 import cv2
-from tqdm import tqdm
-
+from functools import partial
 from python_hyperscope.utils import (crop_border,
-                                     rm_files_in_dir,
                                      stitch_images,
-                                     create_save_dir_if_needed)
+                                     create_dir_if_needed)
 
 logger = logging.getLogger(__name__)
 
 
-def stitch_images_in_dir(in_dir, save_name):
+def stitch_images_from_list(src_list, save_name, crop=True):
     """Stitch Images in batches, growing at each function call.
 
     Args:
-        in_dir (str): input directory of images to batch and stitch
+        src_list (list): list of images to stitch
         save_name (str): output file name for temporary panoramics
+        crop (bool): whether to crop or not
 
     Returns: Nothing. Creates Pano in microscope_images_processed/tmp_panoX/ directories as a side effect.
     """
-    logger.debug(f'Attemping to stitch images in dir: {in_dir}')
+    logger.debug(f'Attemping to stitch images in dir: {save_name}')
     save_dir = '/'.join(save_name.split(os.sep)[:-1])
-    create_save_dir_if_needed(save_dir)
+    create_dir_if_needed(save_dir)
 
-    image_files = sorted(glob(in_dir + '/*JPG'))
-    images = [cv2.imread(image_file) for image_file in image_files]
+    crop_border_fn = partial(crop_border, border_x=200, border_y=200) if crop else lambda x: x
+
+    images = [
+        crop_border_fn(cv2.imread(image_file))
+        for image_file in src_list
+    ]
 
     try:
         stitched = stitch_images(images)

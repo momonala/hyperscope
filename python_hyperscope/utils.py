@@ -1,6 +1,7 @@
 """Helper functions for generating panoramics."""
 import logging
 import os
+from contextlib import redirect_stderr
 from glob import glob
 from shutil import copyfile
 
@@ -23,46 +24,49 @@ def prepare_directories_for_stitching_in_rows(input_dir):
         input_dir (str): input directory of images
     Returns: Nothing. Indexes a side effect.
     """
-    images = sorted(glob(f'{input_dir}/*JPG'))
+    image_files = sorted(glob(f'{input_dir}/*JPG'))
 
     directory_number = 0
     images_in_one_row = []
     debug_logs = []
-    for img in tqdm(images):
-        image_pixel_sum = np.mean(cv2.imread(img))
+    for img_name in tqdm(image_files):
+        image_pixel_mean = int(np.mean(cv2.imread(img_name)))
 
         # if we see a black 'end of row' image, copy all previous images to a new numbered directory.
-        if image_pixel_sum < 5:
-            debug_logs.append((img, round(image_pixel_sum, 2)))
+        if image_pixel_mean < 10:
+            debug_logs.append((img_name, round(image_pixel_mean, 2)))
             new_dir = f'{input_dir}/row_{str(directory_number).zfill(2)}'
-            create_save_dir_if_needed(new_dir)
+            create_dir_if_needed(new_dir)
             for img_in_row in images_in_one_row:
                 copyfile(img_in_row, f'{new_dir}/{img_in_row.split("/")[-1]}')
             images_in_one_row = []
             directory_number += 1
         else:
-            images_in_one_row.append(img)
+            images_in_one_row.append(img_name)
     logger.debug(debug_logs)
 
 
 def stitch_images(image_list):
     """Stitch a list of images together.
 
+    And try to supress OpenCV/MPL std err output...
+
     Args:
         image_list (list)
     Returns:
         np.ndarray: stitched image
     """
-    stitcher = cv2.createStitcher()
-    _, stitched = stitcher.stitch(image_list)
+    stitcher = cv2.Stitcher.create()
+    with redirect_stderr('') as _:
+        _, stitched = stitcher.stitch(image_list)
     return stitched
 
 
-def create_save_dir_if_needed(save_dir):
+def create_dir_if_needed(dir_name):
     """Create directory if needed."""
-    if not os.path.isdir(save_dir):
-        logger.debug(f'Creating dir: {save_dir}')
-        os.mkdir(save_dir)
+    if not os.path.isdir(dir_name):
+        logger.debug(f'Creating dir: {dir_name}')
+        os.mkdir(dir_name)
 
 
 def get_memory_usage():
@@ -88,12 +92,9 @@ def crop_border(img, border_x, border_y):
     return img[border_y:-border_y, border_x:-border_x, :]
 
 
-def get_mag(img):
-    """Get magnitude (energy) of image."""
-    sobelx = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=5)
-    sobely = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=5)
-    mag = np.mean(np.sqrt(sobelx ** 2 + sobely ** 2))
-    return mag
+def sort_jpg_files_in_dir_alpha(in_dir):
+    """Alphabetically sort all the jpg files in a directory and return as a list."""
+    return sorted(glob(in_dir + '/*JPG'))
 
 
 def rm_files_in_dir(directory):
