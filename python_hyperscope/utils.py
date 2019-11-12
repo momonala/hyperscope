@@ -63,13 +63,18 @@ def stitch_images(image_list):
     return stitched
 
 
-def create_dir_if_needed(dir_name):
-    """Create directory if needed."""
+def create_dir_if_needed(dir_name, delete=False):
+    """Create directory if needed.
+    Args:
+        dir_name (str)
+        delete (bool): whether to delete all the files in the directory or not
+    """
     if not os.path.isdir(dir_name):
         logger.debug(f'Creating dir: {dir_name}')
         os.mkdir(dir_name)
     else:
-        [os.remove(os.path.join(dir_name, f)) for f in os.listdir(dir_name)]
+        if delete:
+            [os.remove(os.path.join(dir_name, f)) for f in os.listdir(dir_name)]
 
 
 def get_memory_usage():
@@ -115,7 +120,7 @@ def format_directories(input_dir):
     dir_dzi = os.path.join(dir_final_output, "dzi")
     path_dzi = os.path.join(dir_dzi, sample_name)
 
-    create_dir_if_needed(dir_image_rows)
+    create_dir_if_needed(dir_image_rows, delete=True)
     create_dir_if_needed(dir_final_output)
     create_dir_if_needed(dir_dzi)
     return dir_image_rows, dir_final_output, path_final_output, dir_dzi, path_dzi

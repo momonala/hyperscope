@@ -25,7 +25,6 @@ logger = logging.getLogger(__name__)
 logging.root.setLevel(logging.INFO)
 logging.basicConfig(level=logging.INFO)
 
-CHUNKSIZE = 10   # set really high for to not use chunking (100)
 OVERLAP = 2      # number of images in chunk that overlap
 SKIP = False     # only every other image
 
@@ -35,6 +34,8 @@ if __name__ == '__main__':
                         help='Input directory of images to stitch.')
     parser.add_argument('-p', '--prepare', default=True, required=False, type=lambda x: (str(x).lower() == 'true'),
                         help='Whether to prepare directories or not (bool).')
+    parser.add_argument('-c', '--chunk_size', default=10, required=True, type=int,
+                        help='size of sub list of images in row to process (set to 100 to process whole row.)')
     args = parser.parse_args()
 
     if not os.path.isdir(args.input_dir):
@@ -45,11 +46,11 @@ if __name__ == '__main__':
     logger.info('Preparing directory for stitching in rows.')
     if args.prepare:
         prepare_directories_for_stitching_in_rows(input_dir=args.input_dir)
-    dir_image_rows, dir_final_output, path_final_output, dir_dzi, path_dzi = format_directories()
+    dir_image_rows, dir_final_output, path_final_output, dir_dzi, path_dzi = format_directories(args.input_dir)
     
     # get all image dirs and stitch the rows
     logger.info('Attempting to stitch images in rows.')
-    logger.info(f'Chunk size: {CHUNKSIZE} \tOverlap: {OVERLAP} \tSkipping: {SKIP}')
+    logger.info(f'Chunk size: {args.chunk_size} \tOverlap: {OVERLAP} \tSkipping: {SKIP}')
     input_dir_tree_pbar = tqdm(
         sorted([x[0] for x in os.walk(args.input_dir) if 'row' in x[0]])[:-1]
     )
@@ -57,8 +58,8 @@ if __name__ == '__main__':
         img_file_list = sort_jpg_files_in_dir_alpha(input_sub_dir)
         img_file_list = img_file_list[::2] if SKIP else img_file_list
         img_file_list_split = [
-            img_file_list[i:i + CHUNKSIZE]
-            for i in range(0, len(img_file_list), CHUNKSIZE - OVERLAP)
+            img_file_list[i:i + args.chunk_size]
+            for i in range(0, len(img_file_list), args.chunk_size - OVERLAP)
         ]
         img_file_list_pbar = tqdm(img_file_list_split)
 
