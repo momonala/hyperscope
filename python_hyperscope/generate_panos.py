@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 logging.root.setLevel(logging.INFO)
 logging.basicConfig(level=logging.INFO)
 
-CHUNKSIZE = 10   # set really high for no chunks
+CHUNKSIZE = 10   # set really high for to not use chunking (100)
 OVERLAP = 2      # number of images in chunk that overlap
 SKIP = False     # only every other image
 
@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
     # get all image dirs and stitch the rows
     logger.info('Attempting to stitch images in rows.')
-    logger.info(f'Chunk size: {CHUNKSIZE} Overlap: {OVERLAP} Skipping {SKIP}')
+    logger.info(f'Chunk size: {CHUNKSIZE} \tOverlap: {OVERLAP} \tSkipping: {SKIP}')
     input_dir_tree_pbar = tqdm(
         sorted([x[0] for x in os.walk(args.input_dir) if 'row' in x[0]])[:-1]
     )

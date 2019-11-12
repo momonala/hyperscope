@@ -56,7 +56,8 @@ def stitch_images(image_list):
     Returns:
         np.ndarray: stitched image
     """
-    stitcher = cv2.Stitcher.create()
+    #  stitch modes: cv2.Stitcher_PANORAMA, cv2.Stitcher_SCANS
+    stitcher = cv2.Stitcher.create(cv2.Stitcher_SCANS)
     with redirect_stderr('') as _:
         _, stitched = stitcher.stitch(image_list)
     return stitched
