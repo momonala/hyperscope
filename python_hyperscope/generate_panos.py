@@ -17,9 +17,9 @@ from tqdm import tqdm
 
 from python_hyperscope.stitch_algorithms import stitch_images_from_list
 from python_hyperscope.utils import (prepare_directories_for_stitching_in_rows,
-                                     create_dir_if_needed,
                                      get_memory_usage,
-                                     sort_jpg_files_in_dir_alpha)
+                                     sort_jpg_files_in_dir_alpha,
+                                     format_directories)
 
 logger = logging.getLogger(__name__)
 logging.root.setLevel(logging.INFO)
@@ -45,21 +45,8 @@ if __name__ == '__main__':
     logger.info('Preparing directory for stitching in rows.')
     if args.prepare:
         prepare_directories_for_stitching_in_rows(input_dir=args.input_dir)
-
-    # pre-format directories and paths
-    sample_name = args.input_dir.split(os.sep)[1]
-    dir_image_rows = os.path.join(args.input_dir, 'rows')
-
-    dir_final_output = os.path.join(args.input_dir, 'output')
-    path_final_output = os.path.join(dir_final_output, 'output')
-
-    dir_dzi = os.path.join(dir_final_output, "dzi")
-    path_dzi = os.path.join(dir_dzi, sample_name)
-
-    create_dir_if_needed(dir_image_rows)
-    create_dir_if_needed(dir_final_output)
-    create_dir_if_needed(dir_dzi)
-
+    dir_image_rows, dir_final_output, path_final_output, dir_dzi, path_dzi = format_directories()
+    
     # get all image dirs and stitch the rows
     logger.info('Attempting to stitch images in rows.')
     logger.info(f'Chunk size: {CHUNKSIZE} \tOverlap: {OVERLAP} \tSkipping: {SKIP}')
