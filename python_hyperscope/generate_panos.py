@@ -25,8 +25,9 @@ logger = logging.getLogger(__name__)
 logging.root.setLevel(logging.INFO)
 logging.basicConfig(level=logging.INFO)
 
-OVERLAP = 2      # number of images in chunk that overlap
+OVERLAP = 6      # number of images in chunk that overlap
 SKIP = False     # only every other image
+DEBUG = False
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -51,36 +52,46 @@ if __name__ == '__main__':
     # get all image dirs and stitch the rows
     logger.info('Attempting to stitch images in rows.')
     logger.info(f'Chunk size: {args.chunk_size} \tOverlap: {OVERLAP} \tSkipping: {SKIP}')
-    input_dir_tree_pbar = tqdm(
-        sorted([x[0] for x in os.walk(args.input_dir) if 'row' in x[0]])[:-1]
-    )
+    input_dir_tree_pbar = tqdm(sorted([x[0] for x in os.walk(args.input_dir) if 'row' in x[0]])[:-1])
+
     for i, input_sub_dir in enumerate(input_dir_tree_pbar):
         img_file_list = sort_jpg_files_in_dir_alpha(input_sub_dir)
         img_file_list = img_file_list[::2] if SKIP else img_file_list
-        img_file_list_split = [
+        input_dir_tree_pbar.set_description(f'batch size: {len(img_file_list)} | memory: {get_memory_usage()} mb')
+
+        # now go through a single row, break into chunks, stitch, then stitch the chunks together
+        img_file_list_as_chunks = [
             img_file_list[i:i + args.chunk_size]
             for i in range(0, len(img_file_list), args.chunk_size - OVERLAP)
         ]
-        img_file_list_pbar = tqdm(img_file_list_split)
-
-        input_dir_tree_pbar.set_description(
-            f'batch size: {len(img_file_list)} | '
-            f'memory: {get_memory_usage()} mb'
-        )
-
-        for j, img_file_list_chunk in enumerate(img_file_list_pbar):
-            img_file_list_pbar.set_description(f'chunk size: {len(img_file_list_chunk)}')
+        img_file_list_chunks_pbar = tqdm(img_file_list_as_chunks)
+        stitched_images_in_chunk = []
+        for j, img_file_list_chunk in enumerate(img_file_list_chunks_pbar):
+            img_file_list_chunks_pbar.set_description(f'Processing chunk {input_sub_dir.split("/")[-1]}-{j}')
             save_path = os.path.join(dir_image_rows, f'{input_sub_dir.split("/")[-1]}_{j}')
-            stitch_images_from_list(
-                src_list=img_file_list_chunk,
-                save_name=save_path,
-             )
+            stitched_images_in_chunk.append(
+                stitch_images_from_list(
+                    src_list=img_file_list_chunk,
+                    input_type='file',
+                    save_name=save_path,
+                    save=DEBUG
+                 )
+            )
+        img_file_list_chunks_pbar.set_description(f'Stitching full row: {input_sub_dir}')
+        stitch_images_from_list(
+            src_list=stitched_images_in_chunk,
+            save_name=os.path.join(dir_image_rows, f'{input_sub_dir.split("/")[-1]}'),
+            input_type='array',
+            save=True
+        )
 
     # stitch the row images to a final giant panoramic
     logger.info('Attempting to stitch rows into final image.')
     stitch_images_from_list(
         src_list=sort_jpg_files_in_dir_alpha(dir_image_rows),
         save_name=path_final_output,
+        input_type='file',
+        save=True
     )
 
     # slice into .dzi
