@@ -4,13 +4,14 @@ const int joyXPin = A1;
 const int joyButtonPin = 12;
 int joyXyArray[2];
 
+int x_zero;
+int y_zero;
+
 int transformJoystick(int data){
-  // method to fit joystick value to [0-100], then thresh again to [-1, 0, 1]
-  int scaled_0_100 = (int)(((float)data) * 100 /1048);
-  if (scaled_0_100 > 55){
+  if (data > 20){
     return 1;
   }
-  else if (scaled_0_100 < 45){
+  else if (data < -20){
     return -1;
   }
   else {
@@ -19,7 +20,10 @@ int transformJoystick(int data){
 }
 
 void setupJoyStick(){
-  pinMode(joyButtonPin, INPUT_PULLUP); 
+  pinMode(joyButtonPin, INPUT_PULLUP);
+  // set joystick baseline readings
+  x_zero = analogRead(joyXPin);
+  y_zero = analogRead(joyYPin);
 }
 
 int getJoyButton(){
@@ -28,9 +32,10 @@ int getJoyButton(){
 
 void updateJoyArray(){
       // Update joystick values
-    joyXyArray[0] = transformJoystick(analogRead(joyXPin));
-    joyXyArray[1] = transformJoystick(analogRead(joyYPin));
-    //debugArray(joyXyArray[0], joyXyArray[1]);
+    joyXyArray[0] = transformJoystick(analogRead(joyXPin)-x_zero);
+    joyXyArray[1] = transformJoystick(analogRead(joyYPin)-y_zero);
+//    if (DEBUG){debugArray(analogRead(joyXPin)-x_zero, analogRead(joyYPin)-y_zero);}
+    if (DEBUG){debugArray(joyXyArray[0], joyXyArray[1]);}
 }
 
 void moveSteppersViaJoystick(){

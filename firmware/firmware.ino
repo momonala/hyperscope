@@ -1,7 +1,7 @@
 #include <AccelStepper.h>
 
 bool DEBUG = true;
-signed int STEPPER_SPEED = 300; // steps per iteration
+signed int STEPPER_SPEED = 500; // steps per iteration
 unsigned int BAUDRATE = 9600;
 unsigned int INPUT_TYPE = 0; // 0 joystick, 1 Serial
 
@@ -18,7 +18,7 @@ void loop(){
     moveSteppersViaJoystick();
     takePhoto(getJoyButton());
   }
-  if (INPUT_TYPE==1){
-    moveSteppersViaSerial();
-  }  
+//  if (INPUT_TYPE==1){
+//    moveSteppersViaSerial();
+//  }  
 }
