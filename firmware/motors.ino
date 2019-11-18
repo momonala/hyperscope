@@ -10,21 +10,21 @@ AccelStepper stepper0(1, stepPin0, dirPin0);
 AccelStepper stepper1(1, stepPin1, dirPin1);
 
 void setupMotors(){
-  stepper0.setMaxSpeed(1000.0);
-  stepper1.setMaxSpeed(1000.0);
+    stepper0.setMaxSpeed(1000.0);
+    stepper1.setMaxSpeed(1000.0);
 }
 
 void moveSteppers(int xStep, int yStep){
-  // move both steppers
-  if (DEBUG){debugArray(STEPPER_SPEED*yStep, STEPPER_SPEED*xStep);}
-    
-  if (xStep != 0){
-    stepper0.setSpeed(STEPPER_SPEED*xStep);
-    stepper0.runSpeed();
-  }
+    // move both steppers
+    if (DEBUG){debugArray(STEPPER_SPEED*yStep, STEPPER_SPEED*xStep);}
 
-  if (yStep !=0){
-    stepper1.setSpeed(STEPPER_SPEED*yStep);
-    stepper1.runSpeed();
-  }
+    if (xStep != 0){
+        stepper0.setSpeed(STEPPER_SPEED*xStep);
+        stepper0.runSpeed();
+    }
+
+    if (yStep !=0){
+        stepper1.setSpeed(STEPPER_SPEED*yStep);
+        stepper1.runSpeed();
+    }
 }
